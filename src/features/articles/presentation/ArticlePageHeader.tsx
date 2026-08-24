@@ -1,9 +1,12 @@
+"use client";
+
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Link from "next/link";
 
 interface ArticlePageHeaderProps {
   title: string;
@@ -32,13 +35,13 @@ export function ArticlePageHeader({
       </Box>
 
       {action === "create" && (
-        <Button href="/artigos/novo" startIcon={<AddOutlinedIcon sx={{ color: 'white'}} />} variant="contained" sx={{ color: 'white'}}>
-          <Typography sx={{color: 'white'}}>Novo Artigo</Typography>
+        <Button component={Link} href="/artigos/novo" startIcon={<AddOutlinedIcon />} variant="contained">
+          Novo artigo
         </Button>
       )}
 
       {action === "back" && (
-        <Button href="/artigos" startIcon={<ArrowBackOutlinedIcon />} variant="outlined">
+        <Button component={Link} href="/artigos" startIcon={<ArrowBackOutlinedIcon />} variant="outlined">
           Voltar
         </Button>
       )}
