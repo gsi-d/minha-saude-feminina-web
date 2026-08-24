@@ -10,7 +10,7 @@ import { appTheme } from "@/shared/config/theme";
 export function AppThemeProvider({ children }: PropsWithChildren) {
   return (
     <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-      <ThemeProvider theme={appTheme}>
+      <ThemeProvider defaultMode="system" theme={appTheme}>
         <CssBaseline />
         {children}
       </ThemeProvider>

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import type { PropsWithChildren } from "react";
 
 import "./globals.css";
 
-import { AdminShell } from "@/shared/components/AdminShell";
+import { AppShell } from "@/shared/components/AppShell";
 import { AppThemeProvider } from "@/shared/providers/AppThemeProvider";
 
 export const metadata: Metadata = {
@@ -13,10 +14,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body>
+        <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppThemeProvider>
-          <AdminShell>{children}</AdminShell>
+          <AppShell>{children}</AppShell>
         </AppThemeProvider>
       </body>
     </html>

@@ -1,19 +1,44 @@
 "use client";
 
 import { createTheme } from "@mui/material/styles";
+import type { PaletteColor, SimplePaletteColorOptions } from "@mui/material/styles";
+
+declare module "@mui/material/styles" {
+  interface CssThemeVariables {
+    enabled: true;
+  }
+
+  interface Palette {
+    tertiary: PaletteColor;
+  }
+
+  interface PaletteOptions {
+    tertiary?: SimplePaletteColorOptions;
+  }
+}
 
 export const appTheme = createTheme({
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#8a3d70",
+  cssVariables: {
+    colorSchemeSelector: "class",
+  },
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: { main: "#C56682" },
+        secondary: { main: "#fff6f8" },
+        tertiary: { main: "#C43A4A" },
+        background: { default: "#fff6f8", paper: "#ffebf0" },
+        error: { main: "#b00020" },
+      },
     },
-    secondary: {
-      main: "#c46a92",
-    },
-    background: {
-      default: "#f7f5f8",
-      paper: "#ffffff",
+    dark: {
+      palette: {
+        primary: { main: "#C56682" },
+        secondary: { main: "#fff6f8" },
+        tertiary: { main: "#C43A4A" },
+        background: { default: "#1C1719", paper: "#1d1d1d" },
+        error: { main: "#b00020" },
+      },
     },
   },
   shape: {
