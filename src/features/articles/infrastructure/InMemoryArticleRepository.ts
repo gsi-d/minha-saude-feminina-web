@@ -6,35 +6,69 @@ import type {
   UpdateArticleInput,
 } from "@/features/articles/domain/article";
 
-const NOT_IMPLEMENTED_MESSAGE =
-  "O repositório em memória será implementado junto com o CRUD.";
+function cloneArticle(article: Article): Article {
+  return {
+    ...article,
+    content: structuredClone(article.content),
+    createdAt: new Date(article.createdAt),
+    updatedAt: new Date(article.updatedAt),
+  };
+}
 
 export class InMemoryArticleRepository implements ArticleRepository {
+  private articles: Article[];
+
+  constructor(initialArticles: Article[] = []) {
+    this.articles = initialArticles.map(cloneArticle);
+  }
+
   async list(): Promise<Article[]> {
-    throw new Error(NOT_IMPLEMENTED_MESSAGE);
+    return this.articles
+      .map(cloneArticle)
+      .sort((first, second) => second.updatedAt.getTime() - first.updatedAt.getTime());
   }
 
   async findById(id: ArticleId): Promise<Article | null> {
-    void id;
-    throw new Error(NOT_IMPLEMENTED_MESSAGE);
+    const article = this.articles.find((candidate) => candidate.id === id);
+    return article ? cloneArticle(article) : null;
   }
 
   async create(input: CreateArticleInput): Promise<Article> {
-    void input;
-    throw new Error(NOT_IMPLEMENTED_MESSAGE);
+    const now = new Date();
+    const article: Article = {
+      ...input,
+      content: structuredClone(input.content),
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.articles.push(article);
+    return cloneArticle(article);
   }
 
   async update(
     id: ArticleId,
     input: UpdateArticleInput,
   ): Promise<Article> {
-    void id;
-    void input;
-    throw new Error(NOT_IMPLEMENTED_MESSAGE);
+    const articleIndex = this.articles.findIndex((article) => article.id === id);
+
+    if (articleIndex === -1) {
+      throw new Error("Artigo não encontrado.");
+    }
+
+    const updatedArticle: Article = {
+      ...this.articles[articleIndex],
+      ...input,
+      content: input.content
+        ? structuredClone(input.content)
+        : this.articles[articleIndex].content,
+      updatedAt: new Date(),
+    };
+    this.articles[articleIndex] = updatedArticle;
+    return cloneArticle(updatedArticle);
   }
 
   async remove(id: ArticleId): Promise<void> {
-    void id;
-    throw new Error(NOT_IMPLEMENTED_MESSAGE);
+    this.articles = this.articles.filter((article) => article.id !== id);
   }
 }

@@ -1,5 +1,5 @@
 import { ArticlePageHeader } from "@/features/articles/presentation/ArticlePageHeader";
-import { EmptyArticlesState } from "@/features/articles/presentation/EmptyArticlesState";
+import { ArticlesList } from "@/features/articles/presentation/ArticlesList";
 
 export default function ArticlesPage() {
   return (
@@ -9,7 +9,7 @@ export default function ArticlesPage() {
         description="Crie, edite e organize os conteúdos exibidos no aplicativo."
         title="Artigos"
       />
-      <EmptyArticlesState />
+      <ArticlesList />
     </>
   );
 }

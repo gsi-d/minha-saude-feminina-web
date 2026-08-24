@@ -1,27 +1,18 @@
-import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 
-import { ArticleEditorPlaceholder } from "@/features/articles/presentation/ArticleEditorPlaceholder";
 import { ArticlePageHeader } from "@/features/articles/presentation/ArticlePageHeader";
+import { NewArticleScreen } from "@/features/articles/presentation/NewArticleScreen";
 
 export default function NewArticlePage() {
   return (
     <Stack spacing={3}>
       <ArticlePageHeader
         action="back"
-        description="Estrutura reservada para o formulário de criação."
+        description="Crie o conteúdo, adicione mídias e acompanhe a prévia no aplicativo."
         title="Novo artigo"
       />
 
-      <Paper variant="outlined" sx={{ p: 3 }}>
-        <Stack spacing={2}>
-          <Typography component="h2" variant="h6">
-            Conteúdo
-          </Typography>
-          <ArticleEditorPlaceholder />
-        </Stack>
-      </Paper>
+      <NewArticleScreen />
     </Stack>
   );
 }
