@@ -3,6 +3,7 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useState } from "react";
 
 import {
+  getAdministratorName,
   hasAdministratorSession,
   loginAsAdministrator,
   type LoginResult,
@@ -12,6 +13,7 @@ import {
 interface AuthContextValue {
   isAdmin: boolean;
   isReady: boolean;
+  userName: string | null;
   login: (email: string, password: string) => Promise<LoginResult>;
   logout: () => Promise<void>;
 }
@@ -21,15 +23,21 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
     hasAdministratorSession()
-      .then((authorized) => {
-        if (active) setIsAdmin(authorized);
+      .then(async (authorized) => {
+        if (!active) return;
+        setIsAdmin(authorized);
+        setUserName(authorized ? await getAdministratorName() : null);
       })
       .catch(() => {
-        if (active) setIsAdmin(false);
+        if (active) {
+          setIsAdmin(false);
+          setUserName(null);
+        }
       })
       .finally(() => {
         if (active) setIsReady(true);
@@ -42,16 +50,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
   async function login(email: string, password: string) {
     const result = await loginAsAdministrator(email, password);
     setIsAdmin(result === "success");
+    setUserName(result === "success" ? await getAdministratorName() : null);
     return result;
   }
 
   async function logout() {
     await logoutAdministrator();
     setIsAdmin(false);
+    setUserName(null);
   }
 
   return (
-    <AuthContext.Provider value={{ isAdmin, isReady, login, logout }}>
+    <AuthContext.Provider value={{ isAdmin, isReady, userName, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
