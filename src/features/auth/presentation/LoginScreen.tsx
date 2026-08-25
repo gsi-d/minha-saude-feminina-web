@@ -1,7 +1,6 @@
 "use client";
 
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -117,26 +116,17 @@ export function LoginScreen() {
         }}
       >
         <Stack spacing={4}>
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <Box
-              sx={{
-                alignItems: "center",
-                bgcolor: "primary.main",
-                borderRadius: 3,
-                color: "common.white",
-                display: "flex",
-                height: 52,
-                justifyContent: "center",
-                width: 52,
-              }}
-            >
-              <FavoriteBorderRoundedIcon />
-            </Box>
+              component="img"
+              src={"/images/Logo-Menu-Rosa.png"}
+              sx={{ width: 300, height: 75, mb: 1 }}
+            />
             <Box>
               <Typography component="p" sx={{ color: "primary.main", fontWeight: 700, letterSpacing: 0.8 }}>
                 MINHA SAUDE FEMININA
               </Typography>
-              <Typography component="h1" sx={{ color: "#2f2327", fontSize: { xs: "2rem", sm: "2.4rem" }, mt: 0.5 }} variant="h4">
+              <Typography component="h1" sx={{ fontSize: { xs: "2rem", sm: "2.4rem" }, mt: 0.5 }} variant="h4">
                 Bem-vinda de volta
               </Typography>
               <Typography sx={{ color: "#6f6267", mt: 1 }}>

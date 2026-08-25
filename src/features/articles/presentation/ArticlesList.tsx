@@ -56,14 +56,19 @@ export function ArticlesList() {
         <Table aria-label="Artigos cadastrados">
           <TableHead>
             <TableRow>
-              <TableCell>Título</TableCell><TableCell>Tag</TableCell><TableCell>Público</TableCell>
-              <TableCell>Status</TableCell><TableCell>Atualizado em</TableCell><TableCell align="right">Ações</TableCell>
+              <TableCell sx={{ fontWeight: 650, color: 'primary.main' }}>TÍTULO</TableCell>
+              <TableCell sx={{ fontWeight: 650, color: 'primary.main' }}>CATEGORIA</TableCell>
+              <TableCell sx={{ fontWeight: 650, color: 'primary.main' }}>PÚBLICO</TableCell>
+              <TableCell sx={{ fontWeight: 650, color: 'primary.main' }}>STATUS</TableCell>
+              <TableCell sx={{ fontWeight: 650, color: 'primary.main' }}>CRIADO EM</TableCell>
+              <TableCell sx={{ fontWeight: 650, color: 'primary.main' }}>ATUALIZADO EM</TableCell>
+              <TableCell align="right" sx={{ color: 'primary.main'}}>Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {articles.map((article) => (
               <TableRow hover key={article.id}>
-                <TableCell><Box sx={{ fontWeight: 650, minWidth: 220 }}>{article.title}</Box></TableCell>
+                <TableCell><Box sx={{ minWidth: 220 }}>{article.title}</Box></TableCell>
                 <TableCell>{article.tag || "—"}</TableCell>
                 <TableCell>{article.audience ?? "Não definido"}</TableCell>
                 <TableCell>
@@ -74,6 +79,7 @@ export function ArticlesList() {
                     variant={article.status === "ARQUIVADO" ? "outlined" : "filled"}
                   />
                 </TableCell>
+                <TableCell>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(article.createdAt)}</TableCell>
                 <TableCell>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(article.updatedAt)}</TableCell>
                 <TableCell align="right">
                   <Tooltip title="Editar artigo"><IconButton component={Link} href={`/artigos/${article.id}/editar`} size="small"><EditOutlinedIcon fontSize="small" /></IconButton></Tooltip>
