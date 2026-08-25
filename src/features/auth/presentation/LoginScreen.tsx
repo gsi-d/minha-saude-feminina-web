@@ -2,23 +2,50 @@
 
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import InputAdornment from "@mui/material/InputAdornment";
+import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
-import type { FormEvent } from "react";
+import { type FormEvent, useState } from "react";
+
+import { useAuth } from "@/features/auth/presentation/AuthProvider";
 
 export function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    router.replace("/artigos");
+    setErrorMessage("");
+    setIsLoading(true);
+
+    try {
+      const result = await login(email, password);
+
+      if (result === "success") {
+        router.replace("/artigos");
+        return;
+      }
+
+      setErrorMessage(
+        result === "not_admin"
+          ? "Acesso negado. Este usuário não possui permissão de administrador."
+          : "E-mail ou senha inválidos.",
+      );
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Não foi possível realizar o login.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -73,10 +100,20 @@ export function LoginScreen() {
           backdropFilter: "blur(18px)",
           bgcolor: "rgba(255, 255, 255, 0.88)",
           border: "1px solid rgba(197, 102, 130, 0.2)",
+          color: "#2f2327",
           maxWidth: 460,
           p: { xs: 3, sm: 5 },
           position: "relative",
           width: "100%",
+          "& .MuiInputBase-input": {
+            color: "#2f2327",
+          },
+          "& .MuiInputLabel-root": {
+            color: "#6f6267",
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: "primary.main",
+          },
         }}
       >
         <Stack spacing={4}>
@@ -99,53 +136,55 @@ export function LoginScreen() {
               <Typography component="p" sx={{ color: "primary.main", fontWeight: 700, letterSpacing: 0.8 }}>
                 MINHA SAUDE FEMININA
               </Typography>
-              <Typography component="h1" sx={{ fontSize: { xs: "2rem", sm: "2.4rem" }, mt: 0.5 }} variant="h4">
+              <Typography component="h1" sx={{ color: "#2f2327", fontSize: { xs: "2rem", sm: "2.4rem" }, mt: 0.5 }} variant="h4">
                 Bem-vinda de volta
               </Typography>
-              <Typography color="text.secondary" sx={{ mt: 1 }}>
+              <Typography sx={{ color: "#6f6267", mt: 1 }}>
                 Acesse o painel para gerenciar os artigos do aplicativo.
               </Typography>
             </Box>
           </Stack>
 
           <Stack component="form" onSubmit={handleSubmit} spacing={2.5}>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <TextField
               autoComplete="email"
               fullWidth
               label="E-mail"
               name="email"
+              onChange={(event) => setEmail(event.target.value)}
               placeholder="seu@email.com"
+              required
+              slotProps={{ inputLabel: { shrink: true } }}
               type="email"
+              value={email}
             />
             <TextField
               autoComplete="current-password"
               fullWidth
               label="Senha"
               name="password"
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Digite sua senha"
+              required
               type="password"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlinedIcon color="action" fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
+              slotProps={{ inputLabel: { shrink: true } }}
+              value={password}
             />
             <Button
-              endIcon={<ArrowForwardRoundedIcon />}
+              disabled={isLoading}
+              endIcon={isLoading ? undefined : <ArrowForwardRoundedIcon />}
               fullWidth
               size="large"
               sx={{ color: "common.white", minHeight: 50, mt: 0.5 }}
               type="submit"
               variant="contained"
             >
-              Entrar
+              {isLoading ? <CircularProgress color="inherit" size={24} /> : "Entrar"}
             </Button>
           </Stack>
 
-          <Typography color="text.secondary" sx={{ fontSize: "0.8rem", textAlign: "center" }}>
+          <Typography sx={{ color: "#6f6267", fontSize: "0.8rem", textAlign: "center" }}>
             Acesso administrativo ao Minha Saude Feminina
           </Typography>
         </Stack>

@@ -9,6 +9,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 
+import { useAuth } from "@/features/auth/presentation/AuthProvider";
 import { ColorModeToggle } from "@/shared/components/ColorModeToggle";
 import Box from "@mui/material/Box";
 
@@ -18,9 +19,14 @@ interface AppHeaderProps {
 
 export function AppHeader({ onMenuToggle }: AppHeaderProps) {
   const router = useRouter();
+  const { logout } = useAuth();
 
-  function handleLogout() {
-    router.replace("/login");
+  async function handleLogout() {
+    try {
+      await logout();
+    } finally {
+      router.replace("/login");
+    }
   }
 
   return (
