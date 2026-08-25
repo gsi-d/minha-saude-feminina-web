@@ -8,7 +8,7 @@ import { AppThemeProvider } from "@/shared/providers/AppThemeProvider";
 import { AuthProvider } from "@/features/auth/presentation/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Gestão de artigos | Minha Saúde Feminina",
+  title: "Gestão de conteúdos | Minha Saúde Feminina",
   description: "Painel administrativo de conteúdos do Minha Saúde Feminina.",
 };
 
