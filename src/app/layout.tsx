@@ -4,8 +4,6 @@ import type { PropsWithChildren } from "react";
 
 import "./globals.css";
 
-import { AppShell } from "@/shared/components/AppShell";
-import { ArticlesProvider } from "@/features/articles/presentation/ArticlesProvider";
 import { AppThemeProvider } from "@/shared/providers/AppThemeProvider";
 
 export const metadata: Metadata = {
@@ -18,11 +16,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
-        <AppThemeProvider>
-          <ArticlesProvider>
-            <AppShell>{children}</AppShell>
-          </ArticlesProvider>
-        </AppThemeProvider>
+        <AppThemeProvider>{children}</AppThemeProvider>
       </body>
     </html>
   );
