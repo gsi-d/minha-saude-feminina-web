@@ -1,5 +1,6 @@
 "use client";
 
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import Alert from "@mui/material/Alert";
@@ -13,7 +14,7 @@ import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState, type ChangeEvent, type ReactNode } from "react";
 
 import type {
   Article,
@@ -28,6 +29,7 @@ import { ArticleRichTextEditor } from "@/features/articles/presentation/ArticleR
 interface ArticleEditorFormProps {
   initialArticle?: Article;
   onSave: (input: CreateArticleInput) => Promise<void>;
+  secondaryActions?: ReactNode;
 }
 
 const emptyDocument: ArticleDocument = {
@@ -35,7 +37,20 @@ const emptyDocument: ArticleDocument = {
   document: { type: "doc", content: [{ type: "paragraph" }] },
 };
 
-export function ArticleEditorForm({ initialArticle, onSave }: ArticleEditorFormProps) {
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("Nao foi possivel ler a imagem selecionada."));
+    };
+    reader.onerror = () => reject(new Error("Nao foi possivel ler a imagem selecionada."));
+    reader.readAsDataURL(file);
+  });
+}
+
+export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: ArticleEditorFormProps) {
+  const coverImageInputId = useId();
   const [title, setTitle] = useState(initialArticle?.title ?? "");
   const [summary, setSummary] = useState(initialArticle?.summary ?? "");
   const [tag, setTag] = useState(initialArticle?.tag ?? "");
@@ -63,9 +78,28 @@ export function ArticleEditorForm({ initialArticle, onSave }: ArticleEditorFormP
     setMessage(null);
   }
 
+  async function handleCoverImageFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Selecione um arquivo de imagem valido para a capa.");
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      change(setCoverImage, dataUrl);
+      setError(null);
+    } catch (fileError) {
+      setError(fileError instanceof Error ? fileError.message : "Nao foi possivel carregar a imagem de capa.");
+    }
+  }
+
   async function save(status: ArticleStatus) {
     if (!title.trim()) {
-      setError("Informe o título do artigo.");
+      setError("Informe o titulo do artigo.");
       return;
     }
 
@@ -86,7 +120,7 @@ export function ArticleEditorForm({ initialArticle, onSave }: ArticleEditorFormP
       setDirty(false);
       setMessage(status === "PUBLICADO" ? "Artigo publicado com sucesso." : "Rascunho salvo com sucesso.");
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "Não foi possível salvar o artigo.");
+      setError(saveError instanceof Error ? saveError.message : "Nao foi possivel salvar o artigo.");
     } finally {
       setSaving(false);
     }
@@ -98,7 +132,12 @@ export function ArticleEditorForm({ initialArticle, onSave }: ArticleEditorFormP
         <Alert severity={error ? "error" : "success"}>{error ?? message}</Alert>
       )}
 
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ justifyContent: "flex-end" }}>
+      <Stack
+        direction="row"
+        spacing={1.5}
+        sx={{ alignItems: "center", flexWrap: "wrap", justifyContent: "flex-start" }}
+      >
+        {secondaryActions}
         <Button
           disabled={saving}
           onClick={() => save("RASCUNHO")}
@@ -125,13 +164,13 @@ export function ArticleEditorForm({ initialArticle, onSave }: ArticleEditorFormP
           gridTemplateColumns: { xs: "minmax(0, 1fr)", lg: "minmax(0, 1fr) 410px" },
         }}
       >
-        <Stack spacing={3} sx={{ minWidth: 0 }}>
-          <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack spacing={2.5}>
-              <Typography component="h2" variant="h6">Informações do artigo</Typography>
+        <Stack spacing={3} sx={{ alignItems: "stretch", minWidth: 0, width: "100%" }}>
+          <Paper sx={{ p: { xs: 2, sm: 3 } }} variant="outlined">
+            <Stack spacing={2.5} sx={{ alignItems: "stretch", width: "100%" }}>
+              <Typography component="h2" variant="h6">Informacoes do artigo</Typography>
               <TextField
                 fullWidth
-                label="Título"
+                label="Titulo"
                 onChange={(event) => change(setTitle, event.target.value)}
                 required
                 value={title}
@@ -139,41 +178,58 @@ export function ArticleEditorForm({ initialArticle, onSave }: ArticleEditorFormP
               <TextField
                 fullWidth
                 helperText={`${summary.length}/300 caracteres`}
-                slotProps={{ htmlInput: { maxLength: 300 } }}
                 label="Resumo"
                 minRows={3}
                 multiline
                 onChange={(event) => change(setSummary, event.target.value)}
+                slotProps={{ htmlInput: { maxLength: 300 } }}
                 value={summary}
               />
-              <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" } }}>
-                <TextField label="Tag" onChange={(event) => change(setTag, event.target.value)} value={tag} />
-                <FormControl>
-                  <InputLabel id="article-audience-label">Público</InputLabel>
+              <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, width: "100%" }}>
+                <TextField fullWidth label="Tag" onChange={(event) => change(setTag, event.target.value)} value={tag} />
+                <FormControl fullWidth>
+                  <InputLabel id="article-audience-label">Publico</InputLabel>
                   <Select
-                    label="Público"
+                    label="Publico"
                     labelId="article-audience-label"
                     onChange={(event) => change(setAudience, event.target.value as ArticleAudience)}
                     value={audience}
                   >
                     <MenuItem value="GERAL">Geral</MenuItem>
                     <MenuItem value="GESTANTE">Gestantes</MenuItem>
-                    <MenuItem value="NAO_GESTANTE">Não gestantes</MenuItem>
+                    <MenuItem value="NAO_GESTANTE">Nao gestantes</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
               <TextField
                 fullWidth
-                helperText="Posteriormente esta URL será preenchida pelo upload no Supabase Storage."
+                helperText="Cole uma URL publica ou selecione uma imagem do seu dispositivo."
                 label="URL da imagem de capa"
                 onChange={(event) => change(setCoverImage, event.target.value)}
                 value={coverImage}
               />
+              <Box sx={{ alignSelf: "flex-start" }}>
+                <input
+                  accept="image/*"
+                  hidden
+                  id={coverImageInputId}
+                  onChange={handleCoverImageFileChange}
+                  type="file"
+                />
+                <Button
+                  component="label"
+                  htmlFor={coverImageInputId}
+                  startIcon={<ImageOutlinedIcon />}
+                  variant="outlined"
+                >
+                  Selecionar imagem do dispositivo
+                </Button>
+              </Box>
             </Stack>
           </Paper>
 
-          <Box>
-            <Typography component="h2" sx={{ mb: 1.5 }} variant="h6">Conteúdo hipermídia</Typography>
+          <Box sx={{ width: "100%" }}>
+            <Typography component="h2" sx={{ mb: 1.5 }} variant="h6">Conteudo hipermidia</Typography>
             <ArticleRichTextEditor
               onChange={(document) => change(setContent, document)}
               value={content}
