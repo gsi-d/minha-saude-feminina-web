@@ -3,6 +3,7 @@
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -18,11 +19,13 @@ import { useArticles } from "@/features/articles/presentation/ArticlesProvider";
 
 export function EditArticleScreen({ articleId }: { articleId: string }) {
   const router = useRouter();
-  const { findArticle, removeArticle, updateArticle } = useArticles();
+  const { categories, error, findArticle, loading, removeArticle, updateArticle } = useArticles();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const article = findArticle(articleId);
 
-  if (!article) return <Alert severity="warning">Artigo não encontrado. Ele pode ter sido excluído nesta sessão.</Alert>;
+  if (loading) return <CircularProgress aria-label="Carregando artigo" />;
+  if (error) return <Alert severity="error">{error}</Alert>;
+  if (!article) return <Alert severity="warning">Artigo não encontrado no banco de dados.</Alert>;
 
   async function remove() {
     await removeArticle(articleId);
@@ -32,6 +35,7 @@ export function EditArticleScreen({ articleId }: { articleId: string }) {
   return (
     <Stack spacing={2.5}>
       <ArticleEditorForm
+        categories={categories}
         initialArticle={article}
         onSave={(input: CreateArticleInput) => updateArticle(articleId, input).then(() => undefined)}
         secondaryActions={(
@@ -47,7 +51,7 @@ export function EditArticleScreen({ articleId }: { articleId: string }) {
       />
       <Dialog onClose={() => setDeleteDialogOpen(false)} open={deleteDialogOpen}>
         <DialogTitle>Excluir artigo?</DialogTitle>
-        <DialogContent><DialogContentText>Esta ação removerá “{article.title}” dos dados fake da sessão.</DialogContentText></DialogContent>
+        <DialogContent><DialogContentText>Esta ação removerá “{article.title}” do banco de dados.</DialogContentText></DialogContent>
         <DialogActions><Button onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button><Button color="error" onClick={remove} variant="contained">Excluir</Button></DialogActions>
       </Dialog>
     </Stack>

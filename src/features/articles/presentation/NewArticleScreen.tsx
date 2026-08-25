@@ -8,12 +8,12 @@ import { useArticles } from "@/features/articles/presentation/ArticlesProvider";
 
 export function NewArticleScreen() {
   const router = useRouter();
-  const { createArticle } = useArticles();
+  const { categories, createArticle } = useArticles();
 
   async function save(input: CreateArticleInput) {
     const article = await createArticle(input);
     router.replace(`/artigos/${article.id}/editar`);
   }
 
-  return <ArticleEditorForm onSave={save} />;
+  return <ArticleEditorForm categories={categories} onSave={save} />;
 }
