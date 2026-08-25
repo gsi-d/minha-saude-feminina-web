@@ -32,9 +32,9 @@ export function SideNavigation({ onNavigate }: SideNavigationProps) {
             selected={active}
           >
             <ListItemIcon>
-              <Icon />
+              <Icon color="primary"/>
             </ListItemIcon>
-            <ListItemText primary={item.label} />
+            <ListItemText primary={item.label} sx={{ color: 'primary.main'}}/>
           </ListItemButton>
         );
       })}

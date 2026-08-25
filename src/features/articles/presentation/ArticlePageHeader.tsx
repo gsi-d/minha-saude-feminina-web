@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ArticlePageHeaderProps {
   title: string;
@@ -19,6 +19,16 @@ export function ArticlePageHeader({
   description,
   action,
 }: ArticlePageHeaderProps) {
+  const router = useRouter();
+
+  function handleClickNovo() {
+    router.push("/artigos/novo");
+  }
+
+  function handleClickVoltar() {
+    router.push("/artigos");
+  }
+
   return (
     <Stack
       direction={{ xs: "column", sm: "row" }}
@@ -36,19 +46,21 @@ export function ArticlePageHeader({
 
       {action === "create" && (
         <Button
-          component={Link}
-          href="/artigos/novo"
-          startIcon={<AddOutlinedIcon />}
-          sx={{ color: "common.white" }}
+          onClick={handleClickNovo}
+          startIcon={<AddOutlinedIcon sx={{ color: "common.white" }} />}
+          color="primary"
           variant="contained"
         >
-          Novo artigo
+          NOVO
         </Button>
       )}
-
       {action === "back" && (
-        <Button component={Link} href="/artigos" startIcon={<ArrowBackOutlinedIcon />} variant="outlined">
-          Voltar
+        <Button
+          onClick={handleClickVoltar}
+          startIcon={<ArrowBackOutlinedIcon sx={{ color: "primary.main" }} />}
+          variant="outlined"
+        >
+          VOLTAR
         </Button>
       )}
     </Stack>
