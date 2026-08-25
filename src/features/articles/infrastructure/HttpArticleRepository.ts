@@ -5,6 +5,7 @@ import type {
   CreateArticleInput,
   UpdateArticleInput,
 } from "@/features/articles/domain/article";
+import { authenticatedFetch } from "@/shared/lib/supabase/authenticated-fetch";
 
 type Fetcher = (
   input: RequestInfo | URL,
@@ -26,7 +27,7 @@ function deserializeArticle(article: SerializedArticle): Article {
 
 export class HttpArticleRepository implements ArticleRepository {
   constructor(
-    private readonly fetcher: Fetcher = globalThis.fetch.bind(globalThis),
+    private readonly fetcher: Fetcher = authenticatedFetch,
   ) {}
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {

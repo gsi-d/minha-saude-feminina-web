@@ -9,9 +9,9 @@ import type { SupabaseConteudoRow } from "@/features/articles/infrastructure/Sup
 import { articleSelect } from "@/features/articles/infrastructure/supabase-article-query";
 import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const supabase = createDevSupabaseClient();
+    const supabase = createDevSupabaseClient(request);
     const { data, error } = await supabase
       .from("TB_CONTEUDO")
       .select(articleSelect)
@@ -31,7 +31,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const input = (await request.json()) as CreateArticleInput;
-    const supabase = createDevSupabaseClient();
+    const supabase = createDevSupabaseClient(request);
     const { data, error } = await supabase
       .from("TB_CONTEUDO")
       .insert(mapCreateArticleToSupabaseInsert(input))

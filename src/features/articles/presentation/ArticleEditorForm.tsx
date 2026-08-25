@@ -68,7 +68,10 @@ export function ArticleEditorForm({ categories, initialArticle, onSave, secondar
   const [dirty, setDirty] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const selectedCategoryId = categoryId || (!initialArticle ? categories[0]?.id ?? "" : "");
+  const categoriesForSelect = initialArticle && !categories.some((category) => category.id === initialArticle.categoryId)
+    ? [...categories, { id: initialArticle.categoryId, name: initialArticle.tag }]
+    : categories;
+  const selectedCategoryId = categoryId || (!initialArticle ? categoriesForSelect[0]?.id ?? "" : "");
 
   useEffect(() => {
     function warnBeforeLeaving(event: BeforeUnloadEvent) {
@@ -144,7 +147,7 @@ export function ArticleEditorForm({ categories, initialArticle, onSave, secondar
     }
   }
 
-  const categoryName = categories.find((category) => category.id === selectedCategoryId)?.name ?? "";
+  const categoryName = categoriesForSelect.find((category) => category.id === selectedCategoryId)?.name ?? "";
 
   return (
     <Stack spacing={2.5}>
@@ -214,7 +217,7 @@ export function ArticleEditorForm({ categories, initialArticle, onSave, secondar
                     onChange={(event) => change(setCategoryId, event.target.value)}
                     value={selectedCategoryId}
                   >
-                    {categories.map((category) => (
+                    {categoriesForSelect.map((category) => (
                       <MenuItem key={category.id} value={category.id}>
                         {category.name}
                       </MenuItem>

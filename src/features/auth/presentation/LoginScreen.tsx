@@ -130,7 +130,7 @@ export function LoginScreen() {
                 Bem-vinda de volta
               </Typography>
               <Typography sx={{ color: "#6f6267", mt: 1 }}>
-                Acesse o painel para gerenciar os artigos do aplicativo.
+                Acesse o painel para gerenciar os conteúdos do aplicativo.
               </Typography>
             </Box>
           </Stack>

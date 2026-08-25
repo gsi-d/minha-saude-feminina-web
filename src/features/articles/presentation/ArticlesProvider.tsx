@@ -16,6 +16,7 @@ import type {
   UpdateArticleInput,
 } from "@/features/articles/domain/article";
 import { HttpArticleRepository } from "@/features/articles/infrastructure/HttpArticleRepository";
+import { authenticatedFetch } from "@/shared/lib/supabase/authenticated-fetch";
 
 interface ArticlesContextValue {
   articles: Article[];
@@ -32,7 +33,7 @@ interface ArticlesContextValue {
 const ArticlesContext = createContext<ArticlesContextValue | null>(null);
 
 async function loadCategories(): Promise<ArticleCategory[]> {
-  const response = await fetch("/api/categories");
+  const response = await authenticatedFetch("/api/categories?active=true");
   const body = (await response.json().catch(() => null)) as
     | ArticleCategory[]
     | { error?: string }
