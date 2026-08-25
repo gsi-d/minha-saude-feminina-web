@@ -22,9 +22,9 @@ export function getDevDatabaseConfig(
     throw new Error("Defina NEXT_PUBLIC_SUPABASE_URL em .env.local.");
   }
 
-  const serviceRoleKey = environment.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const serviceRoleKey = environment.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
   if (!serviceRoleKey) {
-    throw new Error("Defina SUPABASE_SERVICE_ROLE_KEY em .env.local.");
+    throw new Error("Defina NEXT_PUBLIC_SUPABASE_ANON_KEY em .env.local.");
   }
 
   return { serviceRoleKey, url };

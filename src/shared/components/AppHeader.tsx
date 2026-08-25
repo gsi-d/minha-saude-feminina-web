@@ -6,7 +6,6 @@ import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/features/auth/presentation/AuthProvider";
@@ -46,36 +45,32 @@ export function AppHeader({ onMenuToggle }: AppHeaderProps) {
         >
           <MenuIcon />
         </IconButton>
-        <Box
-          component="img"
-          src={"/images/Logo.png"}
-          sx={{ width: 50, height: 50, mb: 1 }}
-        />
-        <Typography
-          component="span"
-          noWrap
-          sx={{ flexGrow: 1, fontWeight: 700, minWidth: 0 }}
-          variant="h6"
-        >
-          Minha Saúde Feminina
-        </Typography>
-        <ColorModeToggle />
-        <Button
-          aria-label="Sair do painel"
-          color="inherit"
-          onClick={handleLogout}
-          startIcon={<LogoutOutlinedIcon />}
-          sx={{
-            borderColor: "rgba(255, 255, 255, 0.72)",
-            color: "common.white",
-            flexShrink: 0,
-            mr: 0.5,
-            "&:hover": { borderColor: "common.white" },
-          }}
-          variant="outlined"
-        >
-          Sair
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+          <Box
+            component="img"
+            src={"/images/Logo-Branca.png"}
+            sx={{ width: 45, height: 45, mb: 1 }}
+          />
+          <Box>
+            <ColorModeToggle />
+            <Button
+              aria-label="Sair do painel"
+              color="inherit"
+              onClick={handleLogout}
+              startIcon={<LogoutOutlinedIcon />}
+              sx={{
+                borderColor: "rgba(255, 255, 255, 0.72)",
+                color: "common.white",
+                flexShrink: 0,
+                mr: 0.5,
+                "&:hover": { borderColor: "common.white" },
+              }}
+              variant="outlined"
+            >
+              Sair
+            </Button>
+          </Box>
+        </Box>
       </Toolbar>
     </AppBar>
   );
