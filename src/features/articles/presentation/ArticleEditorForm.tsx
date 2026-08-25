@@ -19,14 +19,17 @@ import { useEffect, useId, useState, type ChangeEvent, type ReactNode } from "re
 import type {
   Article,
   ArticleAudience,
+  ArticleCategory,
   ArticleDocument,
   ArticleStatus,
   CreateArticleInput,
 } from "@/features/articles/domain/article";
 import { ArticleMobilePreview } from "@/features/articles/presentation/ArticleMobilePreview";
 import { ArticleRichTextEditor } from "@/features/articles/presentation/ArticleRichTextEditor";
+import { isTipoUsuarioPublico, tiposUsuarioPublico } from "@/shared/enum";
 
 interface ArticleEditorFormProps {
+  categories: ArticleCategory[];
   initialArticle?: Article;
   onSave: (input: CreateArticleInput) => Promise<void>;
   secondaryActions?: ReactNode;
@@ -49,18 +52,23 @@ function readFileAsDataUrl(file: File) {
   });
 }
 
-export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: ArticleEditorFormProps) {
+export function ArticleEditorForm({ categories, initialArticle, onSave, secondaryActions }: ArticleEditorFormProps) {
   const coverImageInputId = useId();
   const [title, setTitle] = useState(initialArticle?.title ?? "");
   const [summary, setSummary] = useState(initialArticle?.summary ?? "");
-  const [tag, setTag] = useState(initialArticle?.tag ?? "");
-  const [audience, setAudience] = useState<ArticleAudience>(initialArticle?.audience ?? "GERAL");
+  const [categoryId, setCategoryId] = useState(initialArticle?.categoryId ?? "");
+  const [audience, setAudience] = useState<ArticleAudience | "">(
+    isTipoUsuarioPublico(initialArticle?.audience)
+      ? initialArticle.audience
+      : "",
+  );
   const [coverImage, setCoverImage] = useState(initialArticle?.coverImage ?? "");
   const [content, setContent] = useState<ArticleDocument>(initialArticle?.content ?? emptyDocument);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const selectedCategoryId = categoryId || (!initialArticle ? categories[0]?.id ?? "" : "");
 
   useEffect(() => {
     function warnBeforeLeaving(event: BeforeUnloadEvent) {
@@ -103,6 +111,16 @@ export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: 
       return;
     }
 
+    if (!selectedCategoryId) {
+      setError("Nenhuma categoria está disponível para o artigo.");
+      return;
+    }
+
+    if (!isTipoUsuarioPublico(audience)) {
+      setError("Informe o público do artigo.");
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setMessage(null);
@@ -111,7 +129,7 @@ export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: 
       await onSave({
         title: title.trim(),
         summary: summary.trim(),
-        tag: tag.trim(),
+        categoryId: selectedCategoryId,
         audience,
         coverImage: coverImage.trim() || null,
         content,
@@ -125,6 +143,8 @@ export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: 
       setSaving(false);
     }
   }
+
+  const categoryName = categories.find((category) => category.id === selectedCategoryId)?.name ?? "";
 
   return (
     <Stack spacing={2.5}>
@@ -186,7 +206,21 @@ export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: 
                 value={summary}
               />
               <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, width: "100%" }}>
-                <TextField fullWidth label="Tag" onChange={(event) => change(setTag, event.target.value)} value={tag} />
+                <FormControl fullWidth>
+                  <InputLabel id="article-category-label">Categoria</InputLabel>
+                  <Select
+                    label="Categoria"
+                    labelId="article-category-label"
+                    onChange={(event) => change(setCategoryId, event.target.value)}
+                    value={selectedCategoryId}
+                  >
+                    {categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <FormControl fullWidth>
                   <InputLabel id="article-audience-label">Publico</InputLabel>
                   <Select
@@ -195,9 +229,11 @@ export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: 
                     onChange={(event) => change(setAudience, event.target.value as ArticleAudience)}
                     value={audience}
                   >
-                    <MenuItem value="GERAL">Geral</MenuItem>
-                    <MenuItem value="GESTANTE">Gestantes</MenuItem>
-                    <MenuItem value="NAO_GESTANTE">Nao gestantes</MenuItem>
+                    {tiposUsuarioPublico.map((tipoUsuario) => (
+                      <MenuItem key={tipoUsuario} value={tipoUsuario}>
+                        {tipoUsuario}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Box>
@@ -242,7 +278,7 @@ export function ArticleEditorForm({ initialArticle, onSave, secondaryActions }: 
             content={content}
             coverImage={coverImage || null}
             summary={summary}
-            tag={tag}
+            tag={categoryName}
             title={title}
           />
         </Box>

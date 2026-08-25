@@ -1,8 +1,15 @@
+import type { TipoUsuarioPublico } from "@/shared/enum";
+
 export type ArticleId = string;
 
-export type ArticleAudience = "GERAL" | "GESTANTE" | "NAO_GESTANTE";
+export type ArticleAudience = TipoUsuarioPublico;
 
 export type ArticleStatus = "RASCUNHO" | "PUBLICADO" | "ARQUIVADO";
+
+export interface ArticleCategory {
+  id: string;
+  name: string;
+}
 
 export interface ArticleContentMark {
   type: string;
@@ -31,13 +38,22 @@ export interface Article {
   summary: string;
   content: ArticleDocument;
   coverImage: string | null;
+  categoryId: string;
   tag: string;
-  audience: ArticleAudience;
+  audience: ArticleAudience | null;
   status: ArticleStatus;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export type CreateArticleInput = Omit<Article, "id" | "createdAt" | "updatedAt">;
+export interface CreateArticleInput {
+  audience: ArticleAudience;
+  categoryId: string;
+  content: ArticleDocument;
+  coverImage: string | null;
+  status: ArticleStatus;
+  summary: string;
+  title: string;
+}
 
 export type UpdateArticleInput = Partial<CreateArticleInput>;

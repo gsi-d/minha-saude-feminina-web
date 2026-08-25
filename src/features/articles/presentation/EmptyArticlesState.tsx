@@ -9,10 +9,10 @@ export function EmptyArticlesState() {
       <Box sx={{ color: "text.secondary", textAlign: "center" }}>
         <ArticleOutlinedIcon sx={{ fontSize: 48, mb: 1 }} />
         <Typography color="text.primary" variant="h6">
-          Estrutura da listagem
+          Nenhum artigo cadastrado
         </Typography>
         <Typography sx={{ mt: 0.5 }}>
-          A tabela e as ações do CRUD serão implementadas na próxima etapa.
+          Crie o primeiro artigo para começar a publicar conteúdos.
         </Typography>
       </Box>
     </Paper>
