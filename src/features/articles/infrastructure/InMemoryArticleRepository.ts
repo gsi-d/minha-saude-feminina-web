@@ -39,6 +39,7 @@ export class InMemoryArticleRepository implements ArticleRepository {
       ...input,
       content: structuredClone(input.content),
       id: crypto.randomUUID(),
+      tag: "",
       createdAt: now,
       updatedAt: now,
     };

@@ -2,9 +2,11 @@
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -23,12 +25,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 import type { Article } from "@/features/articles/domain/article";
+import { EmptyArticlesState } from "@/features/articles/presentation/EmptyArticlesState";
 import { useArticles } from "@/features/articles/presentation/ArticlesProvider";
 
 const statusLabels = { ARQUIVADO: "Arquivado", PUBLICADO: "Publicado", RASCUNHO: "Rascunho" } as const;
 
 export function ArticlesList() {
-  const { articles, removeArticle } = useArticles();
+  const { articles, error, loading, reload, removeArticle } = useArticles();
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
 
   async function confirmDelete() {
@@ -36,6 +39,16 @@ export function ArticlesList() {
     await removeArticle(articleToDelete.id);
     setArticleToDelete(null);
   }
+
+  if (loading) {
+    return <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress aria-label="Carregando artigos" /></Box>;
+  }
+
+  if (error) {
+    return <Alert action={<Button onClick={() => void reload()}>Tentar novamente</Button>} severity="error" sx={{ mt: 3 }}>{error}</Alert>;
+  }
+
+  if (articles.length === 0) return <EmptyArticlesState />;
 
   return (
     <>
@@ -52,7 +65,7 @@ export function ArticlesList() {
               <TableRow hover key={article.id}>
                 <TableCell><Box sx={{ fontWeight: 650, minWidth: 220 }}>{article.title}</Box></TableCell>
                 <TableCell>{article.tag || "—"}</TableCell>
-                <TableCell>{article.audience === "GERAL" ? "Geral" : article.audience === "GESTANTE" ? "Gestantes" : "Não gestantes"}</TableCell>
+                <TableCell>{article.audience ?? "Não definido"}</TableCell>
                 <TableCell>
                   <Chip
                     color={article.status === "PUBLICADO" ? "success" : article.status === "RASCUNHO" ? "warning" : "default"}
@@ -74,7 +87,7 @@ export function ArticlesList() {
 
       <Dialog onClose={() => setArticleToDelete(null)} open={Boolean(articleToDelete)}>
         <DialogTitle>Excluir artigo?</DialogTitle>
-        <DialogContent><DialogContentText>O artigo “{articleToDelete?.title}” será removido dos dados em memória desta sessão.</DialogContentText></DialogContent>
+        <DialogContent><DialogContentText>O artigo “{articleToDelete?.title}” será removido do banco de dados.</DialogContentText></DialogContent>
         <DialogActions><Button onClick={() => setArticleToDelete(null)}>Cancelar</Button><Button color="error" onClick={confirmDelete} variant="contained">Excluir</Button></DialogActions>
       </Dialog>
     </>

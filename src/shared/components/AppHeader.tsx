@@ -1,7 +1,6 @@
 "use client";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
@@ -11,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 
 import { ColorModeToggle } from "@/shared/components/ColorModeToggle";
+import Box from "@mui/material/Box";
 
 interface AppHeaderProps {
   onMenuToggle: () => void;
@@ -40,7 +40,11 @@ export function AppHeader({ onMenuToggle }: AppHeaderProps) {
         >
           <MenuIcon />
         </IconButton>
-        <MenuBookOutlinedIcon sx={{ mr: 1.5 }} />
+        <Box
+          component="img"
+          src={"/images/Logo.png"}
+          sx={{ width: 50, height: 50, mb: 1 }}
+        />
         <Typography
           component="span"
           noWrap
@@ -49,6 +53,7 @@ export function AppHeader({ onMenuToggle }: AppHeaderProps) {
         >
           Minha Saúde Feminina
         </Typography>
+        <ColorModeToggle />
         <Button
           aria-label="Sair do painel"
           color="inherit"
@@ -65,7 +70,6 @@ export function AppHeader({ onMenuToggle }: AppHeaderProps) {
         >
           Sair
         </Button>
-        <ColorModeToggle />
       </Toolbar>
     </AppBar>
   );
