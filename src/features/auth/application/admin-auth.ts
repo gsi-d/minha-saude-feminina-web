@@ -4,6 +4,22 @@ import { getSupabaseClient } from "@/shared/lib/supabase/client";
 
 export type LoginResult = "success" | "invalid_credentials" | "not_admin";
 
+export async function getAdministratorName(): Promise<string | null> {
+  const supabase = getSupabaseClient();
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !authData.user) return null;
+
+  const { data, error } = await supabase
+    .from("TB_USUARIO")
+    .select("NM_USUARIO")
+    .eq("ID_AUTH", authData.user.id)
+    .maybeSingle();
+
+  if (error) throw new Error(`Não foi possível carregar o nome do usuário: ${error.message}`);
+  return data?.NM_USUARIO?.trim() || null;
+}
+
 async function isAdministrator(user: User): Promise<boolean> {
   const { data, error } = await getSupabaseClient()
     .from("TB_USUARIO")
