@@ -31,8 +31,20 @@ export function EditArticleScreen({ articleId }: { articleId: string }) {
 
   return (
     <Stack spacing={2.5}>
-      <Button color="error" onClick={() => setDeleteDialogOpen(true)} startIcon={<DeleteOutlineIcon />} sx={{ alignSelf: "flex-end" }} variant="outlined">Excluir artigo</Button>
-      <ArticleEditorForm initialArticle={article} onSave={(input: CreateArticleInput) => updateArticle(articleId, input).then(() => undefined)} />
+      <ArticleEditorForm
+        initialArticle={article}
+        onSave={(input: CreateArticleInput) => updateArticle(articleId, input).then(() => undefined)}
+        secondaryActions={(
+          <Button
+            color="error"
+            onClick={() => setDeleteDialogOpen(true)}
+            startIcon={<DeleteOutlineIcon />}
+            variant="contained"
+          >
+            Excluir artigo
+          </Button>
+        )}
+      />
       <Dialog onClose={() => setDeleteDialogOpen(false)} open={deleteDialogOpen}>
         <DialogTitle>Excluir artigo?</DialogTitle>
         <DialogContent><DialogContentText>Esta ação removerá “{article.title}” dos dados fake da sessão.</DialogContentText></DialogContent>

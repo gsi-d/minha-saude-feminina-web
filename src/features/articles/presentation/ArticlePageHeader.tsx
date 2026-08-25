@@ -35,7 +35,13 @@ export function ArticlePageHeader({
       </Box>
 
       {action === "create" && (
-        <Button component={Link} href="/artigos/novo" startIcon={<AddOutlinedIcon />} variant="contained">
+        <Button
+          component={Link}
+          href="/artigos/novo"
+          startIcon={<AddOutlinedIcon />}
+          sx={{ color: "common.white" }}
+          variant="contained"
+        >
           Novo artigo
         </Button>
       )}

@@ -33,7 +33,7 @@ import { TextStyleKit } from "@tiptap/extension-text-style";
 import { Youtube } from "@tiptap/extension-youtube";
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import type { ReactNode } from "react";
+import { useId, type ChangeEvent, type ReactNode } from "react";
 
 import type { ArticleDocument } from "@/features/articles/domain/article";
 
@@ -81,7 +81,7 @@ function requestLink(editor: Editor) {
   editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
 }
 
-function requestImage(editor: Editor) {
+function requestImageByUrl(editor: Editor) {
   const src = window.prompt("URL pública da imagem");
   if (!src) return;
   const alt = window.prompt("Texto alternativo da imagem") ?? "";
@@ -94,13 +94,26 @@ function requestVideo(editor: Editor) {
   if (src) editor.chain().focus().setYoutubeVideo({ src }).run();
 }
 
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("Não foi possível ler a imagem selecionada."));
+    };
+    reader.onerror = () => reject(new Error("Não foi possível ler a imagem selecionada."));
+    reader.readAsDataURL(file);
+  });
+}
+
 export function ArticleRichTextEditor({ onChange, value }: ArticleRichTextEditorProps) {
+  const localImageInputId = useId();
   const editor = useEditor({
     immediatelyRender: false,
     content: value.document,
     extensions: [
       StarterKit.configure({ link: { openOnClick: false } }),
-      Image.configure({ allowBase64: false }),
+      Image.configure({ allowBase64: true }),
       TextStyleKit,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight.configure({ multicolor: true }),
@@ -115,9 +128,32 @@ export function ArticleRichTextEditor({ onChange, value }: ArticleRichTextEditor
   });
 
   if (!editor) return null;
+  const activeEditor = editor;
+
+  async function handleLocalImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !file.type.startsWith("image/")) return;
+
+    try {
+      const src = await readFileAsDataUrl(file);
+      const alt = window.prompt("Texto alternativo da imagem") ?? "";
+      const title = window.prompt("Legenda da imagem") ?? "";
+      activeEditor.chain().focus().setImage({ src, alt, title }).run();
+    } catch {
+      window.alert("Não foi possível carregar a imagem selecionada.");
+    }
+  }
 
   return (
     <Paper variant="outlined">
+      <input
+        accept="image/*"
+        hidden
+        id={localImageInputId}
+        onChange={handleLocalImageChange}
+        type="file"
+      />
       <Stack
         direction="row"
         sx={{ alignItems: "center", flexWrap: "wrap", gap: 0.5, p: 1 }}
@@ -181,7 +217,8 @@ export function ArticleRichTextEditor({ onChange, value }: ArticleRichTextEditor
 
         <Divider flexItem orientation="vertical" />
         <ToolbarButton active={editor.isActive("link")} label="Inserir link" onClick={() => requestLink(editor)}><InsertLinkIcon fontSize="small" /></ToolbarButton>
-        <ToolbarButton label="Inserir imagem" onClick={() => requestImage(editor)}><ImageOutlinedIcon fontSize="small" /></ToolbarButton>
+        <ToolbarButton label="Inserir imagem por URL" onClick={() => requestImageByUrl(editor)}><ImageOutlinedIcon fontSize="small" /></ToolbarButton>
+        <ToolbarButton label="Inserir imagem da máquina" onClick={() => document.getElementById(localImageInputId)?.click()}><ImageOutlinedIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Inserir vídeo do YouTube" onClick={() => requestVideo(editor)}><YouTubeIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Separador" onClick={() => editor.chain().focus().setHorizontalRule().run()}><HorizontalRuleIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Limpar formatação" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}><FormatClearIcon fontSize="small" /></ToolbarButton>
