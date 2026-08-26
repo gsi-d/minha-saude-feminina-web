@@ -7,7 +7,7 @@ import {
 } from "@/features/articles/infrastructure/article-mappers";
 import type { SupabaseConteudoRow } from "@/features/articles/infrastructure/SupabaseConteudoRow";
 import { articleSelect } from "@/features/articles/infrastructure/supabase-article-query";
-import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
+import { createDevSupabaseAdminClient } from "@/shared/infrastructure/supabase/server";
 
 interface ArticleRouteContext {
   params: Promise<{ id: string }>;
@@ -24,7 +24,7 @@ function parseArticleId(id: string) {
 export async function GET(request: Request, context: ArticleRouteContext) {
   try {
     const { id } = await context.params;
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_CONTEUDO")
       .select(articleSelect)
@@ -45,7 +45,7 @@ export async function PUT(request: Request, context: ArticleRouteContext) {
   try {
     const { id } = await context.params;
     const input = (await request.json()) as UpdateArticleInput;
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_CONTEUDO")
       .update(mapUpdateArticleToSupabaseUpdate(input))
@@ -65,7 +65,7 @@ export async function PUT(request: Request, context: ArticleRouteContext) {
 export async function DELETE(request: Request, context: ArticleRouteContext) {
   try {
     const { id } = await context.params;
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { error } = await supabase
       .from("TB_CONTEUDO")
       .delete()

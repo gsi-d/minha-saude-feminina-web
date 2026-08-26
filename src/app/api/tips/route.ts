@@ -6,7 +6,7 @@ import {
   parseTipInput,
   type SupabaseTipRow,
 } from "@/features/tips/infrastructure/tip-mappers";
-import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
+import { createDevSupabaseAdminClient } from "@/shared/infrastructure/supabase/server";
 import { getSupabaseErrorMessage } from "@/shared/infrastructure/supabase/supabase-error";
 
 const tipSelect = [
@@ -22,7 +22,7 @@ const tipSelect = [
 
 export async function GET(request: Request) {
   try {
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_DICA")
       .select(tipSelect)
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const input = parseTipInput(await request.json());
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_DICA")
       .insert(mapTipInputToRow(input))

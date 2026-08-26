@@ -1,7 +1,6 @@
 "use client";
 
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -13,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 import { useAuth } from "@/features/auth/presentation/AuthProvider";
+import Alert from "@mui/material/Alert";
 
 export function LoginScreen() {
   const router = useRouter();

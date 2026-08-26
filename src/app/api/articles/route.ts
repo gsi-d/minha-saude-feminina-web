@@ -7,11 +7,11 @@ import {
 } from "@/features/articles/infrastructure/article-mappers";
 import type { SupabaseConteudoRow } from "@/features/articles/infrastructure/SupabaseConteudoRow";
 import { articleSelect } from "@/features/articles/infrastructure/supabase-article-query";
-import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
+import { createDevSupabaseAdminClient } from "@/shared/infrastructure/supabase/server";
 
 export async function GET(request: Request) {
   try {
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_CONTEUDO")
       .select(articleSelect)
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const input = (await request.json()) as CreateArticleInput;
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_CONTEUDO")
       .insert(mapCreateArticleToSupabaseInsert(input))

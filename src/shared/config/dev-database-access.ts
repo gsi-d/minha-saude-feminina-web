@@ -1,5 +1,6 @@
 interface DevDatabaseConfig {
   anonKey: string;
+  serviceRoleKey: string | null;
   url: string;
 }
 
@@ -27,5 +28,9 @@ export function getDevDatabaseConfig(
     throw new Error("Defina NEXT_PUBLIC_SUPABASE_ANON_KEY em .env.local.");
   }
 
-  return { anonKey, url };
+  const serviceRoleKey = environment.SUPABASE_SERVICE_ROLE_KEY?.trim()
+    || environment.SUPABASE_SECRET_KEY?.trim()
+    || null;
+
+  return { anonKey, serviceRoleKey, url };
 }
