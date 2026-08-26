@@ -123,9 +123,6 @@ export function LoginScreen() {
               sx={{ width: 300, height: 75, mb: 1 }}
             />
             <Box>
-              <Typography component="p" sx={{ color: "primary.main", fontWeight: 700, letterSpacing: 0.8 }}>
-                MINHA SAUDE FEMININA
-              </Typography>
               <Typography component="h1" sx={{ fontSize: { xs: "2rem", sm: "2.4rem" }, mt: 0.5 }} variant="h4">
                 Bem-vinda de volta
               </Typography>

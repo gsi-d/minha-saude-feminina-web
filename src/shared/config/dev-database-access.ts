@@ -7,12 +7,8 @@ interface DevDatabaseConfig {
 type Environment = Record<string, string | undefined>;
 
 export function getDevDatabaseConfig(
-  environment: Environment = process.env,
-  nodeEnvironment = process.env.NODE_ENV,
+  environment: Environment = process.env
 ): DevDatabaseConfig {
-  if (nodeEnvironment === "production") {
-    throw new Error("O acesso temporário ao banco está indisponível em produção.");
-  }
 
   if (environment.ENABLE_INSECURE_DEV_DATABASE_ACCESS !== "true") {
     throw new Error("O acesso temporário ao banco não está habilitado.");
