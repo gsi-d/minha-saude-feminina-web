@@ -6,7 +6,7 @@ import {
   parseCategoryInput,
   type SupabaseCategoryRow,
 } from "@/features/categories/infrastructure/category-mappers";
-import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
+import { createDevSupabaseAdminClient } from "@/shared/infrastructure/supabase/server";
 
 interface CategoryRouteContext {
   params: Promise<{ id: string }>;
@@ -33,7 +33,7 @@ export async function PUT(request: Request, context: CategoryRouteContext) {
   try {
     const { id } = await context.params;
     const input = parseCategoryInput(await request.json());
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_CATEGORIA")
       .update(mapCategoryInputToRow(input))
@@ -54,7 +54,7 @@ export async function PUT(request: Request, context: CategoryRouteContext) {
 export async function DELETE(request: Request, context: CategoryRouteContext) {
   try {
     const { id } = await context.params;
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { error } = await supabase
       .from("TB_CATEGORIA")
       .update({ IS_ATIVO: false })

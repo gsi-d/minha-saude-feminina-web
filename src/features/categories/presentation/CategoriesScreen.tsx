@@ -13,17 +13,17 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 
 import type { Category, CategoryInput } from "@/features/categories/domain/category";
@@ -37,6 +37,8 @@ export function CategoriesScreen() {
   const [error, setError] = useState<string | null>(null);
   const [formState, setFormState] = useState<{ key: number; category: Category | null } | null>(null);
   const [categoryToDeactivate, setCategoryToDeactivate] = useState<Category | null>(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "ACTIVE" | "INACTIVE">("ALL");
 
   async function load() {
     setLoading(true);
@@ -83,6 +85,67 @@ export function CategoriesScreen() {
     }
   }
 
+  const normalizedSearch = search.trim().toLocaleLowerCase();
+  const filteredCategories = categories.filter((category) => {
+    const matchesSearch = !normalizedSearch
+      || category.name.toLocaleLowerCase().includes(normalizedSearch)
+      || category.description.toLocaleLowerCase().includes(normalizedSearch);
+    const matchesStatus = statusFilter === "ALL"
+      || (statusFilter === "ACTIVE" ? category.isActive : !category.isActive);
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const columns: Array<GridColDef<Category>> = [
+    {
+      field: "name",
+      flex: 1,
+      headerName: "NOME",
+      minWidth: 220,
+    },
+    {
+      field: "description",
+      flex: 1.5,
+      headerName: "DESCRIÇÃO",
+      minWidth: 300,
+      renderCell: ({ row }) => row.description || "—",
+    },
+    {
+      field: "isActive",
+      flex: 0.7,
+      headerName: "STATUS",
+      minWidth: 130,
+      renderCell: ({ row }) => (
+        <Chip color={row.isActive ? "success" : "default"} label={row.isActive ? "Ativa" : "Inativa"} size="small" />
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "AÇÕES",
+      minWidth: 120,
+      sortable: false,
+      filterable: false,
+      align: "right",
+      headerAlign: "right",
+      renderCell: ({ row }) => (
+        <Stack direction="row" spacing={0.5}>
+          <Tooltip title="Editar">
+            <IconButton onClick={() => setFormState({ category: row, key: Date.now() })}>
+              <EditOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          {row.isActive && (
+            <Tooltip title="Desativar">
+              <IconButton color="error" onClick={() => setCategoryToDeactivate(row)}>
+                <DeleteOutlineOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
+      ),
+    },
+  ];
+
   return (
     <Stack spacing={3}>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { sm: "center" }, justifyContent: "space-between" }}>
@@ -99,24 +162,48 @@ export function CategoriesScreen() {
       ) : categories.length === 0 ? (
         <Paper sx={{ p: 6, textAlign: "center" }} variant="outlined"><Typography>Nenhuma categoria cadastrada.</Typography></Paper>
       ) : (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead><TableRow><TableCell>Nome</TableCell><TableCell>Descrição</TableCell><TableCell>Status</TableCell><TableCell align="right">Ações</TableCell></TableRow></TableHead>
-            <TableBody>
-              {categories.map((category) => (
-                <TableRow hover key={category.id}>
-                  <TableCell sx={{ fontWeight: 650 }}>{category.name}</TableCell>
-                  <TableCell>{category.description || "—"}</TableCell>
-                  <TableCell><Chip color={category.isActive ? "success" : "default"} label={category.isActive ? "Ativa" : "Inativa"} size="small" /></TableCell>
-                  <TableCell align="right">
-                    <Tooltip title="Editar"><IconButton onClick={() => setFormState({ category, key: Date.now() })}><EditOutlinedIcon fontSize="small" /></IconButton></Tooltip>
-                    {category.isActive && <Tooltip title="Desativar"><IconButton color="error" onClick={() => setCategoryToDeactivate(category)}><DeleteOutlineOutlinedIcon fontSize="small" /></IconButton></Tooltip>}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+            <TextField
+              fullWidth
+              label="Buscar categorias"
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Nome ou descrição"
+              value={search}
+            />
+            <FormControl sx={{ minWidth: { xs: "100%", md: 180 } }}>
+              <InputLabel id="categories-status-filter-label">Status</InputLabel>
+              <Select
+                label="Status"
+                labelId="categories-status-filter-label"
+                onChange={(event) => setStatusFilter(event.target.value as "ALL" | "ACTIVE" | "INACTIVE")}
+                value={statusFilter}
+              >
+                <MenuItem value="ALL">Todos</MenuItem>
+                <MenuItem value="ACTIVE">Ativas</MenuItem>
+                <MenuItem value="INACTIVE">Inativas</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+
+          <Paper sx={{ overflow: "hidden" }} variant="outlined">
+            <DataGrid
+              columns={columns}
+              disableRowSelectionOnClick
+              pageSizeOptions={[10, 25, 50]}
+              rows={filteredCategories}
+              initialState={{
+                pagination: { paginationModel: { page: 0, pageSize: 10 } },
+                sorting: { sortModel: [{ field: "name", sort: "asc" }] },
+              }}
+              sx={{
+                border: 0,
+                minHeight: 520,
+                "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": { outline: "none" },
+              }}
+            />
+          </Paper>
+        </>
       )}
 
       {formState && (

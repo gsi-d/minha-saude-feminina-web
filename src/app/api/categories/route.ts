@@ -6,7 +6,7 @@ import {
   parseCategoryInput,
   type SupabaseCategoryRow,
 } from "@/features/categories/infrastructure/category-mappers";
-import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
+import { createDevSupabaseAdminClient } from "@/shared/infrastructure/supabase/server";
 
 const categorySelect = "ID,NM_CATEGORIA,DS_CATEGORIA,IS_ATIVO,DT_CADASTRO";
 
@@ -20,7 +20,7 @@ function categoryError(error: unknown, fallback: string) {
 export async function GET(request: Request) {
   try {
     const onlyActive = new URL(request.url).searchParams.get("active") === "true";
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     let query = supabase
       .from("TB_CATEGORIA")
       .select(categorySelect)
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const input = parseCategoryInput(await request.json());
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_CATEGORIA")
       .insert(mapCategoryInputToRow(input))

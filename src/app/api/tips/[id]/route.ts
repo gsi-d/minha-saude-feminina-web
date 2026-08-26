@@ -6,7 +6,7 @@ import {
   parseTipInput,
   type SupabaseTipRow,
 } from "@/features/tips/infrastructure/tip-mappers";
-import { createDevSupabaseClient } from "@/shared/infrastructure/supabase/server";
+import { createDevSupabaseAdminClient } from "@/shared/infrastructure/supabase/server";
 import { getSupabaseErrorMessage } from "@/shared/infrastructure/supabase/supabase-error";
 
 interface TipRouteContext {
@@ -36,7 +36,7 @@ export async function PUT(request: Request, context: TipRouteContext) {
   try {
     const { id } = await context.params;
     const input = parseTipInput(await request.json());
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { data, error } = await supabase
       .from("TB_DICA")
       .update(mapTipInputToRow(input))
@@ -55,7 +55,7 @@ export async function PUT(request: Request, context: TipRouteContext) {
 export async function DELETE(request: Request, context: TipRouteContext) {
   try {
     const { id } = await context.params;
-    const supabase = createDevSupabaseClient(request);
+    const supabase = createDevSupabaseAdminClient(request);
     const { error } = await supabase
       .from("TB_DICA")
       .update({ IS_ATIVO: false })
