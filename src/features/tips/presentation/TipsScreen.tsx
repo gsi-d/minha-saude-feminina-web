@@ -170,14 +170,14 @@ export function TipsScreen() {
     },
     {
       field: "actions",
-      headerName: "AÇÕES",
+      headerName: "",
       minWidth: 120,
       sortable: false,
       filterable: false,
       align: "right",
       headerAlign: "right",
       renderCell: ({ row }) => (
-        <Stack direction="row" spacing={0.5}>
+        <Stack direction="row" spacing={0.5} sx={{ mt: 1}}>
           <Tooltip title="Editar">
             <IconButton onClick={() => setFormState({ key: Date.now(), tip: row })}>
               <EditOutlinedIcon fontSize="small" />
