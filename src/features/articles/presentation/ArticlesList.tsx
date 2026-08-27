@@ -116,14 +116,14 @@ export function ArticlesList() {
     },
     {
       field: "actions",
-      headerName: "AÇÕES",
+      headerName: "",
       minWidth: 120,
       sortable: false,
       filterable: false,
       align: "right",
       headerAlign: "right",
       renderCell: ({ row }) => (
-        <Stack direction="row" spacing={0.5}>
+        <Stack direction="row" spacing={0.5} sx={{ mt: 1.5}}>
           <Tooltip title="Editar artigo">
             <IconButton component={Link} href={`/artigos/${row.id}/editar`} size="small">
               <EditOutlinedIcon fontSize="small" />
@@ -170,7 +170,6 @@ export function ArticlesList() {
             <MenuItem value="ALL">Todos</MenuItem>
             <MenuItem value="PUBLICADO">Publicado</MenuItem>
             <MenuItem value="RASCUNHO">Rascunho</MenuItem>
-            <MenuItem value="ARQUIVADO">Arquivado</MenuItem>
           </Select>
         </FormControl>
         <FormControl sx={{ minWidth: { xs: "100%", md: 180 } }}>

@@ -16,7 +16,6 @@ import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import RedoIcon from "@mui/icons-material/Redo";
 import UndoIcon from "@mui/icons-material/Undo";
-import YouTubeIcon from "@mui/icons-material/YouTube";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
@@ -87,11 +86,6 @@ function requestImageByUrl(editor: Editor) {
   const alt = window.prompt("Texto alternativo da imagem") ?? "";
   const title = window.prompt("Legenda da imagem") ?? "";
   editor.chain().focus().setImage({ src, alt, title }).run();
-}
-
-function requestVideo(editor: Editor) {
-  const src = window.prompt("URL do vídeo no YouTube");
-  if (src) editor.chain().focus().setYoutubeVideo({ src }).run();
 }
 
 function readFileAsDataUrl(file: File) {
@@ -219,7 +213,6 @@ export function ArticleRichTextEditor({ onChange, value }: ArticleRichTextEditor
         <ToolbarButton active={editor.isActive("link")} label="Inserir link" onClick={() => requestLink(editor)}><InsertLinkIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Inserir imagem por URL" onClick={() => requestImageByUrl(editor)}><ImageOutlinedIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Inserir imagem da máquina" onClick={() => document.getElementById(localImageInputId)?.click()}><ImageOutlinedIcon fontSize="small" /></ToolbarButton>
-        <ToolbarButton label="Inserir vídeo do YouTube" onClick={() => requestVideo(editor)}><YouTubeIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Separador" onClick={() => editor.chain().focus().setHorizontalRule().run()}><HorizontalRuleIcon fontSize="small" /></ToolbarButton>
         <ToolbarButton label="Limpar formatação" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}><FormatClearIcon fontSize="small" /></ToolbarButton>
       </Stack>

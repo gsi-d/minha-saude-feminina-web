@@ -121,14 +121,14 @@ export function CategoriesScreen() {
     },
     {
       field: "actions",
-      headerName: "AÇÕES",
+      headerName: "",
       minWidth: 120,
       sortable: false,
       filterable: false,
       align: "right",
       headerAlign: "right",
       renderCell: ({ row }) => (
-        <Stack direction="row" spacing={0.5}>
+        <Stack direction="row" spacing={0.5} sx={{ mt: 1}}>
           <Tooltip title="Editar">
             <IconButton onClick={() => setFormState({ category: row, key: Date.now() })}>
               <EditOutlinedIcon fontSize="small" />

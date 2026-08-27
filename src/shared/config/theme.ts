@@ -34,10 +34,16 @@ export const appTheme = createTheme({
     dark: {
       palette: {
         primary: { main: "#C56682" },
-        secondary: { main: "#fff6f8" },
-        tertiary: { main: "#C43A4A" },
-        background: { default: "#1C1719", paper: "#1d1d1d" },
-        error: { main: "#b00020" },
+        secondary: { main: "#F3DDE4" },
+        tertiary: { main: "#D95C6A" },
+        background: { default: "#211A1D", paper: "#2C2327" },
+        text: { primary: "#F8ECEF", secondary: "#D8C2C9" },
+        divider: "rgba(229, 185, 198, 0.18)",
+        action: {
+          hover: "rgba(197, 102, 130, 0.10)",
+          selected: "rgba(197, 102, 130, 0.18)",
+        },
+        error: { main: "#EF6A7A" },
       },
     },
   },
